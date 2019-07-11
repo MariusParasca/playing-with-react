@@ -33,6 +33,7 @@ class App extends Component {
 
   render() {
     const style = {
+      
       backgroundColor: 'white',
       font: 'inherit',
       border: '1px solid blue',
