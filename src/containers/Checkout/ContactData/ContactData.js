@@ -9,11 +9,21 @@ import Input from "../../../components/UI/Input/Input";
 class ContactData extends Component {
   state = {
     orderForm: {
-      name: this.createInputConfig("input", "text", "Your Name", ""),
-      street: this.createInputConfig("input", "text", "Street", ""),
-      zipCode: this.createInputConfig("input", "text", "ZIP Code", ""),
-      country: this.createInputConfig("input", "text", "Country", ""),
-      email: this.createInputConfig("input", "text", "Your E-Mail", ""),
+      name: this.createInputConfig("input", "text", "Your Name", "", {
+        required: true
+      }),
+      street: this.createInputConfig("input", "text", "Street", "", {
+        required: true
+      }),
+      zipCode: this.createInputConfig("input", "text", "ZIP Code", "", {
+        required: true
+      }),
+      country: this.createInputConfig("input", "text", "Country", "", {
+        required: true
+      }),
+      email: this.createInputConfig("input", "text", "Your E-Mail", "", {
+        required: true
+      }),
       deliveryMethod: {
         elementType: "select",
         elementConfig: {
@@ -22,26 +32,42 @@ class ContactData extends Component {
             { value: "cheapest", displayValue: "Cheapest" }
           ]
         },
-        value: ""
+        value: "",
+        valid: true
       }
     },
+    formIsValid: false,
     loading: false
   };
 
-  createInputConfig(elementType, tagType, placeholder, value) {
+  createInputConfig(
+    elementType,
+    tagType,
+    placeholder,
+    value,
+    validationObject
+  ) {
     return {
       elementType: elementType,
       elementConfig: { type: tagType, placeholder: placeholder },
-      value: value
+      value: value,
+      validation: validationObject,
+      valid: false,
+      touched: false
     };
   }
 
-  orderHandler = () => {
+  orderHandler = event => {
+    event.preventDefault();
     this.setState({ loading: true });
-    // alert("You continue!");
+    const formData = {};
+    for (let formElementId in this.state.orderForm) {
+      formData[formElementId] = this.state.orderForm[formElementId].value;
+    }
     const order = {
       ingredients: this.props.ingredients,
-      price: this.props.price
+      price: this.props.price,
+      orderData: formData
     };
     axios
       .post("/orders.json", order)
@@ -55,13 +81,35 @@ class ContactData extends Component {
       });
   };
 
+  checkValidity(value, rules) {
+    let isValid = false;
+
+    if (rules && rules.required) {
+      isValid = value.trim() !== "";
+    }
+
+    return isValid;
+  }
+
   inputChangedHandler = (event, inputId) => {
-    const updatedOrderForm = {...this.state.orderForm}
+    const updatedOrderForm = { ...this.state.orderForm };
     const updatedFormElement = { ...updatedOrderForm[inputId] };
     updatedFormElement.value = event.target.value;
+    updatedFormElement.valid = this.checkValidity(
+      updatedFormElement.value,
+      updatedFormElement.validation
+    );
+    updatedFormElement.touched = true;
     updatedOrderForm[inputId] = updatedFormElement;
-    this.setState({orderForm: updatedOrderForm});
-  }
+    let formIsValid = true;
+    for (let inputId in updatedOrderForm) {
+      formIsValid = updatedOrderForm[inputId].valid && formIsValid;
+    }
+    this.setState({
+      orderForm: updatedOrderForm,
+      formIsValid: formIsValid
+    });
+  };
 
   render() {
     const formElementsArray = [];
@@ -72,17 +120,24 @@ class ContactData extends Component {
       });
     }
     let form = (
-      <form>
+      <form onSubmit={this.orderHandler}>
         {formElementsArray.map(formElement => (
           <Input
             key={formElement.id}
             elementType={formElement.config.elementType}
             elementConfig={formElement.config.elementConfig}
             value={formElement.config.value}
-            changed={(event) => this.inputChangedHandler(event, formElement.id)}
+            invalid={!formElement.config.valid}
+            touched={formElement.config.touched}
+            shouldValidate={formElement.config.validation}
+            changed={event => this.inputChangedHandler(event, formElement.id)}
           />
         ))}
-        <Button btnType="Success" clicked={this.orderHandler}>
+        <Button
+          btnType="Success"
+          clicked={this.orderHandler}
+          disabled={this.state.formIsValid}
+        >
           ORDER
         </Button>
       </form>
