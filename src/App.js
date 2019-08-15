@@ -11,18 +11,18 @@ class App extends Component {
   }
 
   showModal = () => {
-    this.setState({ modalIsOpen: true });
+    this.setState({modalIsOpen: true});
   }
 
   closeModal = () => {
-    this.setState({ modalIsOpen: false });
+    this.setState({modalIsOpen: false});
   }
 
   render() {
     return (
       <div className="App">
         <h1>React Animations</h1>
-        <Modal show={this.state.modalIsOpen} closed={this.closeModal} />
+        <Modal show={this.state.modalIsOpen} closed={this.closeModal}/>
         <Backdrop show={this.state.modalIsOpen} />
         <button className="Button" onClick={this.showModal}>Open Modal</button>
         <h3>Animating Lists</h3>
