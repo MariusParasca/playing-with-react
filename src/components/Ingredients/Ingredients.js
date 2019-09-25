@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import IngredientForm from "./IngredientForm";
 import IngredientList from "./IngredientList";
@@ -7,11 +7,29 @@ import Search from "./Search";
 const Ingredients = () => {
   const [ingredients, setIngredients] = useState([]);
 
+  useEffect(() => {
+    console.log("RENDERING INGREDIENTS", ingredients);
+  }, [ingredients]);
+
+  const filteredIngredientsHandler = useCallback(filtredIngredients => {
+    setIngredients(filtredIngredients);
+  }, []);
+
   const addIngredientHandler = ingredient => {
-    setIngredients(prevIngredients => [
-      ...prevIngredients,
-      { id: Math.random().toString(), ...ingredient }
-    ]);
+    fetch("https://react-hooks-81587.firebaseio.com/ingredients.json", {
+      method: "POST",
+      body: JSON.stringify(ingredient),
+      headers: { "Content-Type": "application/json" }
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(responseDate => {
+        setIngredients(prevIngredients => [
+          ...prevIngredients,
+          { id: responseDate.name, ...ingredient }
+        ]);
+      });
   };
 
   const removeIngredientHandler = id => {
@@ -25,7 +43,7 @@ const Ingredients = () => {
       <IngredientForm onAddIngredient={addIngredientHandler} />
 
       <section>
-        <Search />
+        <Search onLoadIngredients={filteredIngredientsHandler} />
         <IngredientList
           ingredients={ingredients}
           onRemoveItem={removeIngredientHandler}
