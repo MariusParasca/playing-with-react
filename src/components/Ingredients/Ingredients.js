@@ -1,46 +1,70 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from 'react';
 
-import IngredientForm from "./IngredientForm";
-import IngredientList from "./IngredientList";
-import Search from "./Search";
+import IngredientForm from './IngredientForm';
+import IngredientList from './IngredientList';
+import ErrorModal from '../UI/ErrorModal';
+import Search from './Search';
 
 const Ingredients = () => {
   const [ingredients, setIngredients] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
 
   useEffect(() => {
-    console.log("RENDERING INGREDIENTS", ingredients);
+    console.log('RENDERING INGREDIENTS', ingredients);
   }, [ingredients]);
 
-  const filteredIngredientsHandler = useCallback(filtredIngredients => {
+  const filteredIngredientsHandler = useCallback((filtredIngredients) => {
     setIngredients(filtredIngredients);
   }, []);
 
-  const addIngredientHandler = ingredient => {
-    fetch("https://react-hooks-81587.firebaseio.com/ingredients.json", {
-      method: "POST",
+  const addIngredientHandler = (ingredient) => {
+    setIsLoading(true);
+    fetch('https://react-hooks-81587.firebaseio.com/ingredients.json', {
+      method: 'POST',
       body: JSON.stringify(ingredient),
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' }
     })
-      .then(response => {
+      .then((response) => {
+        setIsLoading(false);
         return response.json();
       })
-      .then(responseDate => {
-        setIngredients(prevIngredients => [
+      .then((responseDate) => {
+        setIngredients((prevIngredients) => [
           ...prevIngredients,
           { id: responseDate.name, ...ingredient }
         ]);
       });
   };
 
-  const removeIngredientHandler = id => {
-    setIngredients(prevIngredients =>
-      prevIngredients.filter(ingredient => ingredient.id !== id)
-    );
+  const removeIngredientHandler = (id) => {
+    setIsLoading(true);
+    fetch(`https://react-hooks-81587.firebaseio.com/ingredients.json/${id}`, {
+      method: 'DELETE'
+    })
+      .then((response) => {
+        setIsLoading(false);
+        setIngredients((prevIngredients) =>
+          prevIngredients.filter((ingredient) => ingredient.id !== id));
+      })
+      .catch((error) => {
+        setError(error.message);
+        setIsLoading(false);
+      });
+  };
+
+  const clearError = () => {
+    setError(null);
+    setIsLoading(false);
   };
 
   return (
     <div className="App">
-      <IngredientForm onAddIngredient={addIngredientHandler} />
+      {error && <ErrorModal onClose={clearError}>error</ErrorModal>}
+      <IngredientForm
+        onAddIngredient={addIngredientHandler}
+        loading={isLoading}
+      />
 
       <section>
         <Search onLoadIngredients={filteredIngredientsHandler} />
