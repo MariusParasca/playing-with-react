@@ -30,13 +30,18 @@ const Ingredients = () => {
         return response.json();
       })
       .then((responseDate) => {
-        setIngredients((prevIngredients) => [...prevIngredients, { id: responseDate.name, ...ingredient }]);
+        setIngredients((prevIngredients) => [
+          ...prevIngredients,
+          { id: responseDate.name, ...ingredient },
+        ]);
       });
   };
 
   const removeIngredientHandler = (id) => {
     setIsLoading(true);
-    fetch(`https://react-hooks-81587.firebaseio.com/ingredients.json/${id}`, { method: 'DELETE' })
+    fetch(`https://react-hooks-81587.firebaseio.com/ingredients.json/${id}`, {
+      method: 'DELETE',
+    })
       .then((response) => {
         setIsLoading(false);
         setIngredients((prevIngredients) => prevIngredients.filter((ingredient) => ingredient.id !== id));
