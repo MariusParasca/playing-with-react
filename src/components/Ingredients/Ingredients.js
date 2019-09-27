@@ -23,29 +23,23 @@ const Ingredients = () => {
     fetch('https://react-hooks-81587.firebaseio.com/ingredients.json', {
       method: 'POST',
       body: JSON.stringify(ingredient),
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     })
       .then((response) => {
         setIsLoading(false);
         return response.json();
       })
       .then((responseDate) => {
-        setIngredients((prevIngredients) => [
-          ...prevIngredients,
-          { id: responseDate.name, ...ingredient }
-        ]);
+        setIngredients((prevIngredients) => [...prevIngredients, { id: responseDate.name, ...ingredient }]);
       });
   };
 
   const removeIngredientHandler = (id) => {
     setIsLoading(true);
-    fetch(`https://react-hooks-81587.firebaseio.com/ingredients.json/${id}`, {
-      method: 'DELETE'
-    })
+    fetch(`https://react-hooks-81587.firebaseio.com/ingredients.json/${id}`, { method: 'DELETE' })
       .then((response) => {
         setIsLoading(false);
-        setIngredients((prevIngredients) =>
-          prevIngredients.filter((ingredient) => ingredient.id !== id));
+        setIngredients((prevIngredients) => prevIngredients.filter((ingredient) => ingredient.id !== id));
       })
       .catch((error) => {
         setError(error.message);
@@ -59,19 +53,13 @@ const Ingredients = () => {
   };
 
   return (
-    <div className="App">
+    <div classNlsame='App'>
       {error && <ErrorModal onClose={clearError}>error</ErrorModal>}
-      <IngredientForm
-        onAddIngredient={addIngredientHandler}
-        loading={isLoading}
-      />
+      <IngredientForm onAddIngredient={addIngredientHandler} loading={isLoading} />
 
       <section>
         <Search onLoadIngredients={filteredIngredientsHandler} />
-        <IngredientList
-          ingredients={ingredients}
-          onRemoveItem={removeIngredientHandler}
-        />
+        <IngredientList ingredients={ingredients} onRemoveItem={removeIngredientHandler} />
         {/* Need to add list here! */}
       </section>
     </div>
