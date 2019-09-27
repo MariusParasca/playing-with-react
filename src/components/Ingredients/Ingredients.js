@@ -23,7 +23,7 @@ const Ingredients = () => {
     fetch('https://react-hooks-81587.firebaseio.com/ingredients.json', {
       method: 'POST',
       body: JSON.stringify(ingredient),
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     })
       .then((response) => {
         setIsLoading(false);
@@ -32,7 +32,7 @@ const Ingredients = () => {
       .then((responseDate) => {
         setIngredients((prevIngredients) => [
           ...prevIngredients,
-          { id: responseDate.name, ...ingredient }
+          { id: responseDate.name, ...ingredient },
         ]);
       });
   };
@@ -40,12 +40,11 @@ const Ingredients = () => {
   const removeIngredientHandler = (id) => {
     setIsLoading(true);
     fetch(`https://react-hooks-81587.firebaseio.com/ingredients.json/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
     })
       .then((response) => {
         setIsLoading(false);
-        setIngredients((prevIngredients) =>
-          prevIngredients.filter((ingredient) => ingredient.id !== id));
+        setIngredients((prevIngredients) => prevIngredients.filter((ingredient) => ingredient.id !== id));
       })
       .catch((error) => {
         setError(error.message);

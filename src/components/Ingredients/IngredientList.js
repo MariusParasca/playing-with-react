@@ -14,9 +14,9 @@ const IngredientList = (props) => (
 x
           </span>
         </li>
-        ))}
+      ))}
     </ul>
   </section>
-  );
+);
 
 export default IngredientList;

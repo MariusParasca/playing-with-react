@@ -15,6 +15,6 @@ const ErrorModal = React.memo((props) => (
       </div>
     </div>
   </>
-  ));
+));
 
 export default ErrorModal;
