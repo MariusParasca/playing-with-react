@@ -11,43 +11,40 @@ const Ingredients = () => {
   const [error, setError] = useState();
 
   useEffect(() => {
-    console.log('RENDERING INGREDIENTS', ingredients);
+    // console.log('RENDERING INGREDIENTS', ingredients);
   }, [ingredients]);
 
-  const filteredIngredientsHandler = useCallback((filtredIngredients) => {
+  const filteredIngredientsHandler = useCallback(filtredIngredients => {
     setIngredients(filtredIngredients);
   }, []);
 
-  const addIngredientHandler = (ingredient) => {
+  const addIngredientHandler = ingredient => {
     setIsLoading(true);
     fetch('https://react-hooks-81587.firebaseio.com/ingredients.json', {
       method: 'POST',
       body: JSON.stringify(ingredient),
       headers: { 'Content-Type': 'application/json' },
     })
-      .then((response) => {
+      .then(response => {
         setIsLoading(false);
         return response.json();
       })
-      .then((responseDate) => {
-        setIngredients((prevIngredients) => [
-          ...prevIngredients,
-          { id: responseDate.name, ...ingredient },
-        ]);
+      .then(responseDate => {
+        setIngredients(prevIngredients => [...prevIngredients, { id: responseDate.name, ...ingredient }]);
       });
   };
 
-  const removeIngredientHandler = (id) => {
+  const removeIngredientHandler = id => {
     setIsLoading(true);
     fetch(`https://react-hooks-81587.firebaseio.com/ingredients.json/${id}`, {
       method: 'DELETE',
     })
-      .then((response) => {
+      .then(() => {
         setIsLoading(false);
-        setIngredients((prevIngredients) => prevIngredients.filter((ingredient) => ingredient.id !== id));
+        setIngredients(prevIngredients => prevIngredients.filter(ingredient => ingredient.id !== id));
       })
-      .catch((error) => {
-        setError(error.message);
+      .catch(fetchError => {
+        setError(fetchError.message);
         setIsLoading(false);
       });
   };
@@ -60,17 +57,11 @@ const Ingredients = () => {
   return (
     <div className="App">
       {error && <ErrorModal onClose={clearError}>error</ErrorModal>}
-      <IngredientForm
-        onAddIngredient={addIngredientHandler}
-        loading={isLoading}
-      />
+      <IngredientForm onAddIngredient={addIngredientHandler} loading={isLoading} />
 
       <section>
         <Search onLoadIngredients={filteredIngredientsHandler} />
-        <IngredientList
-          ingredients={ingredients}
-          onRemoveItem={removeIngredientHandler}
-        />
+        <IngredientList ingredients={ingredients} onRemoveItem={removeIngredientHandler} />
         {/* Need to add list here! */}
       </section>
     </div>

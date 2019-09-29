@@ -3,7 +3,7 @@ import React from 'react';
 import Card from './UI/Card';
 import './Auth.css';
 
-const Auth = (props) => {
+const Auth = () => {
   const loginHandler = () => {};
 
   return (
@@ -11,7 +11,9 @@ const Auth = (props) => {
       <Card>
         <h2>You are not authenticated!</h2>
         <p>Please log in to continue.</p>
-        <button onClick={loginHandler}>Log In</button>
+        <button onClick={loginHandler} type="button">
+          Log In
+        </button>
       </Card>
     </div>
   );
