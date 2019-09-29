@@ -32,6 +32,7 @@
       {
         "handlers": ["onClick", "onMouseDown", "onMouseUp", "onKeyPress", "onKeyDown", "onKeyUp"]
       }
-    ]
+    ],
+    "no-unused-expressions": 0
   }
 }

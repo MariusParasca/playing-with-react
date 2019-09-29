@@ -9,12 +9,10 @@ const IngredientList = props => {
       <h2>Loaded Ingredients</h2>
       <ul>
         {ingredients.map(ig => (
-          <textarea key={ig.id} role="button" onClick={onRemoveItem.bind(this, ig.id)}>
-            <li>
-              <span>{ig.title}</span>
-              <span>{ig.amount}</span>
-            </li>
-          </textarea>
+          <li key={ig.id} role="presentation" onClick={onRemoveItem.bind(this, ig.id)}>
+            <span>{ig.title}</span>
+            <span>{ig.amount}</span>
+          </li>
         ))}
       </ul>
     </section>
